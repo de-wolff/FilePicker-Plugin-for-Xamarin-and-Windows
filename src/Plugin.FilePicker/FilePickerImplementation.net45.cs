@@ -47,6 +47,43 @@ namespace Plugin.FilePicker
         }
 
         /// <summary>
+        /// File picker implementation for WPF; uses the Win32 OpenFileDialog from
+        /// PresentationFoundation reference assembly.
+        /// </summary>
+        /// <param name="allowedTypes">
+        /// Specifies one or multiple allowed types. When null, all file types
+        /// can be selected while picking.
+        /// On WPF, specify strings like this: "Data type (*.ext)|*.ext", which
+        /// corresponds how the Windows file open dialog specifies file types.
+        /// </param>
+        /// <returns>file data of picked file, or null when picking was cancelled</returns>
+        public Task<FileData> PickSaveFile(string[] allowedTypes = null)
+        {
+            Microsoft.Win32.SaveFileDialog picker = new Microsoft.Win32.SaveFileDialog();
+            picker.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            if (allowedTypes != null)
+            {
+                picker.Filter = string.Join("|", allowedTypes);
+            }
+
+            var result = picker.ShowDialog();
+
+            if (result == null || result == false)
+            {
+                return Task.FromResult<FileData>(null);
+            }
+
+            var fileName = Path.GetFileName(picker.FileName);
+            if (File.Exists(fileName))
+                File.Delete(fileName);
+
+            var data = new FileData(picker.FileName, fileName, () => File.OpenWrite(fileName), (x) => { });
+
+            return Task.FromResult(data);
+        }
+
+        /// <summary>
         /// WPF implementation of saving a picked file to a local folder.
         /// </summary>
         /// <param name="fileToSave">picked file data for file to save</param>

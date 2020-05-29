@@ -240,5 +240,10 @@ namespace Plugin.FilePicker
 
             this.OpenFile(myFile);
         }
+
+        public Task<FileData> PickSaveFile(string[] allowedTypes = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -141,5 +141,10 @@ namespace Plugin.FilePicker
                 // ignore exceptions
             }
         }
+
+        public Task<FileData> PickSaveFile(string[] allowedTypes = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
